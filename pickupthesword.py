@@ -1,8 +1,7 @@
-import random
+import random, pickle, os
 
 descriptors = 'funny sharp dull snakes powerful gleeming wobbly ugly golden rakish silver furry yucky slimy smelly rusty mysterious'.split()
 names = "thwacker poop bully whimpy destructor crumble notverygood".split()
-swords = []
 
 class sword:
 	def __init__(self, name, blade, hilt, magic):
@@ -13,6 +12,19 @@ class sword:
 
 	def __repr__(self):
 		return self.name
+
+	def view(self):
+		print("This is " + self.name + ". It's blade is " + self.blade + ". It's hilt is " + self.hilt + ". It's magic is " + self.magic + ".")
+
+def get_swords():
+	test = os.stat('swords.p')
+	if test.st_size != 0:
+		with open("swords.p", 'rb') as f:
+			swords = pickle.load(f)
+		return swords
+	else:
+		swords = []
+		return swords
 
 def get_descriptor():
 	descriptor_index = random.randint(0, len(descriptors) - 1)
@@ -39,8 +51,12 @@ while running:
 		print("do you want to keep the sword?")
 		choice = input("> ")
 		if choice == "y":
+		 	swords = get_swords()
 		 	swords.append(new_sword)
+		 	with open('swords.p', 'wb') as f:
+		 		pickle.dump(swords, f)
 		 	print(swords)
+		 	swords[0].view()
 		elif choice == "n":
 			print("You are no adventurer")
 			running = False
