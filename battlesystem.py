@@ -1,7 +1,5 @@
 import random
-
-descriptors = 'funny sharp dull snakes powerful gleeming wobbly ugly golden rakish silver furry yucky slimy smelly rusty mysterious'.split()
-names = "thwacker poop bully whimpy destructor crumble notverygood".split()
+from sword_data import descriptors, names
 
 class character:
 	def __init__(self, name, hp, truth, inventory):
@@ -25,8 +23,14 @@ class sword:
 		self.hilt = hilt
 		self.magic = magic
 
+	def __repr__(self):
+		return self.name
+
 	def view(self):
 		print("The sword is called  " + self.name + ". Its blade is " + self.blade + ". Its hilt is " + self.hilt + ". Its magic is " + self.magic + ".")
+
+	def atk_bonus(self):
+		return descriptors[self.blade] + descriptors[self.hilt] + descriptors[self.magic]
 
 def engine(player_turn):
 	if player_turn == True:
@@ -60,12 +64,16 @@ def ai_command():
 		k = heal(ai_go)
 		return k
 
+#creates a sword
 def create_sword():
-	descriptor_index1 = random.randint(0, len(descriptors) - 1)
-	descriptor_index2 = random.randint(0, len(descriptors) - 1)
-	descriptor_index3 = random.randint(0, len(descriptors) - 1)
+	d_list = []
+	for key in descriptors.keys():
+		d_list += [key]
+	descriptor_index1 = random.randint(0, len(d_list) - 1)
+	descriptor_index2 = random.randint(0, len(d_list) - 1)
+	descriptor_index3 = random.randint(0, len(d_list) - 1)
 	name_index = random.randint(0, len(names) - 1)
-	new_sword  = sword(names[name_index], descriptors[descriptor_index1], descriptors[descriptor_index2], descriptors[descriptor_index3])
+	new_sword  = sword(names[name_index], d_list[descriptor_index1], d_list[descriptor_index2], d_list[descriptor_index3])
 	return new_sword
 
 
@@ -75,7 +83,7 @@ def create_sword():
 def attack(ai_go = False):
 	#player's turn
 	if ai_go == False:
-		d = random.randint(0, 6)
+		d = random.randint(0, 6) + new_sword.atk_bonus()
 		print("You attack for " + str(d) + " damage!")
 		game.hp = game.hp - d
 		return False
@@ -100,7 +108,6 @@ def list_commands():
 	commandlist = []
 	for key in commands.keys():
 		commandlist += [key]
-	commandlist.sort()
 	print(commandlist)
 	return True
 
@@ -115,8 +122,13 @@ def heal(ai_go = False):
 		game.hp = game.hp + l
 		return True
 
+def see_sword():
+	print(player.inventory)
+	print(new_sword.atk_bonus())
+
 commands = {'attack' : attack, 'turtle' : turtle,
-	'commands' : list_commands, 'heal' : heal}
+	'commands' : list_commands, 'heal' : heal,
+	'see sword' : see_sword}
 
 
 #this is the game
@@ -126,7 +138,7 @@ commands = {'attack' : attack, 'turtle' : turtle,
 
 
 player = character("you", 10, True, [])
-game = character("game", 10, True, [])
+game = character("game", 20, True, [])
 
 print("You pick up a sword.")
 new_sword = create_sword()
