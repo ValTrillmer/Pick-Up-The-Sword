@@ -1,6 +1,8 @@
 import random
-from sword_data import descriptors, names
+from game_data import descriptors, names
 
+
+#game classes
 class character:
 	def __init__(self, name, hp, truth, inventory):
 		self.name = name
@@ -32,6 +34,8 @@ class sword:
 	def atk_bonus(self):
 		return descriptors[self.blade] + descriptors[self.hilt] + descriptors[self.magic]
 
+
+#engine functions
 def engine(player_turn):
 	if player_turn == True:
 		turn = run_command()
@@ -44,8 +48,8 @@ def run_command():
 	running  = True
 	while running:
 		c = input("> ")
-		if c in commands.keys():
-			k = commands[c]()
+		if c in p_commands.keys():
+			k = p_commands[c]()
 			return k
 			running = False
 		else:
@@ -53,16 +57,12 @@ def run_command():
 
 def ai_command():
 	ai_go = True
-	x = random.randint(1,3)
-	if x == 1:
-		k = attack(ai_go)
-		return k
-	elif x == 2:
-		k = turtle(ai_go)
-		return k
-	else:
-		k = heal(ai_go)
-		return k
+	ai_list = []
+	for key in g_commands.keys():
+		ai_list += [key]
+	x = random.randint(0, len(ai_list) - 1)
+	k = g_commands[ai_list[x]](ai_go)
+	return k
 
 #creates a sword
 def create_sword():
@@ -106,7 +106,7 @@ def turtle(ai_go = False):
 
 def list_commands():
 	commandlist = []
-	for key in commands.keys():
+	for key in p_commands.keys():
 		commandlist += [key]
 	print(commandlist)
 	return True
@@ -125,18 +125,20 @@ def heal(ai_go = False):
 def see_sword():
 	print(player.inventory)
 	print(new_sword.atk_bonus())
+	return True
 
-commands = {'attack' : attack, 'turtle' : turtle,
+
+#these are the commands dictionaries
+p_commands = {'attack' : attack, 'turtle' : turtle,
 	'commands' : list_commands, 'heal' : heal,
 	'see sword' : see_sword}
 
+g_commands = {'attack' : attack, 'turtle' : turtle,
+	'heal' : heal}
+
+
 
 #this is the game
-
-
-
-
-
 player = character("you", 10, True, [])
 game = character("game", 20, True, [])
 
