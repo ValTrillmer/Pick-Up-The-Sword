@@ -4,18 +4,32 @@ from game_data import descriptors, names
 
 #game classes
 class character:
-	def __init__(self, name, hp, truth, inventory):
+	def __init__(self, name, hp, dfs, atk, truth, inventory, a_inventory):
 		self.name = name
 		self.hp = hp
+		self.dfs = dfs
+		self.atk = atk
 		self.alive = truth
 		self.inventory = inventory
+		self.a_inventory = a_inventory
 
 	def check_alive(self):
 		if self.hp < 1:
 			self.alive = False
 
-	def add_inventory(self, new_sword):
-		self.inventory.append(new_sword)
+	#items items to invetory
+	def add_inventory(self, item):
+		self.inventory.append(item)
+
+	#equips sword
+	def equip_sword(self, new_sword):
+		self.a_inventory.append(new_sword)
+
+	def dmg_value(self):
+		if len(self.a_inventory) == 0:
+			return random.randint(0, 6)
+		else:
+			return random.randint(0, 6) + self.a_inventory[0].atk_bonus()
 
 
 class sword:
@@ -29,7 +43,7 @@ class sword:
 		return self.name
 
 	def view(self):
-		print("The sword is called  " + self.name + ". Its blade is " + self.blade + ". Its hilt is " + self.hilt + ". Its magic is " + self.magic + ".")
+		print("The sword is called " + self.name + ". Its blade is " + self.blade + ". Its hilt is " + self.hilt + ". Its magic is " + self.magic + ".")
 
 	def atk_bonus(self):
 		return descriptors[self.blade] + descriptors[self.hilt] + descriptors[self.magic]
@@ -83,13 +97,13 @@ def create_sword():
 def attack(ai_go = False):
 	#player's turn
 	if ai_go == False:
-		d = random.randint(0, 6) + new_sword.atk_bonus()
+		d = player.dmg_value()
 		print("You attack for " + str(d) + " damage!")
 		game.hp = game.hp - d
 		return False
 	#game turn
 	else:
-		d = random.randint(0, 6)
+		d = game.dmg_value()
 		print("you were attacked for " + str(d) + " damage!")
 		player.hp = player.hp - d
 		return True
@@ -123,7 +137,7 @@ def heal(ai_go = False):
 		return True
 
 def see_sword():
-	print(player.inventory)
+	print(player.a_inventory)
 	print(new_sword.atk_bonus())
 	return True
 
@@ -139,13 +153,13 @@ g_commands = {'attack' : attack, 'turtle' : turtle,
 
 
 #this is the game
-player = character("you", 10, True, [])
-game = character("game", 20, True, [])
+player = character("you", 10, 0, 0, True, [], [])
+game = character("game", 20, 0, 0, True, [], [])
 
 print("You pick up a sword.")
 new_sword = create_sword()
 new_sword.view()
-player.add_inventory(new_sword)
+player.equip_sword(new_sword)
 
 print("You have encountered an enemy")
 
