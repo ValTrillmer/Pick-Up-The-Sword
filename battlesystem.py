@@ -1,4 +1,4 @@
-import random
+import random, time
 from game_data import descriptors, names
 
 
@@ -23,13 +23,21 @@ class character:
 
 	#equips sword
 	def equip_sword(self, new_sword):
-		self.a_inventory.append(new_sword)
+		if len(self.a_inventory) == 0:
+			self.a_inventory.append(new_sword)
+		else:
+			self.inventory.append(new_sword)
 
 	def dmg_value(self):
 		if len(self.a_inventory) == 0:
-			return random.randint(0, 6)
+			return self.atk + random.randint(0, 6)
 		else:
-			return random.randint(0, 6) + self.a_inventory[0].atk_bonus()
+			return self.atk + random.randint(0, 6) + self.a_inventory[0].atk_bonus()
+
+	def use_item(self, p_commands):
+		p_commands[self.inventory[0].call] = world_break
+		list_commands()
+
 
 
 class sword:
@@ -48,6 +56,13 @@ class sword:
 	def atk_bonus(self):
 		return descriptors[self.blade] + descriptors[self.hilt] + descriptors[self.magic]
 
+class scroll:
+	def __init__(self, name, call):
+		self.name = name
+		self.call = call
+
+	def __repr__(self):
+		return self.name
 
 #engine functions
 def engine(player_turn):
@@ -99,13 +114,13 @@ def attack(ai_go = False):
 	if ai_go == False:
 		d = player.dmg_value()
 		print("You attack for " + str(d) + " damage!")
-		game.hp = game.hp - d
+		game.hp = game.hp - d + game.dfs
 		return False
 	#game turn
 	else:
 		d = game.dmg_value()
 		print("you were attacked for " + str(d) + " damage!")
-		player.hp = player.hp - d
+		player.hp = player.hp - d + player.dfs
 		return True
 
 def turtle(ai_go = False):
@@ -141,20 +156,52 @@ def see_sword():
 	print(new_sword.atk_bonus())
 	return True
 
+def world_break(ai_go = False):
+	if ai_go == False:
+		d = player.dmg_value() + 100
+		print("You attack for " + str(d) + " damage!")
+		time.sleep(1)
+		print("Kablamo!!!")
+		game.hp = game.hp + game.dfs - d
+		return False
+	else:
+		d = game.dmg_value() + 100
+		print("You were attacked for " + str(d) + " damage!")
+		time.sleep(1)
+		print("Kablamo!!!")
+		player.hp = player.hp + player_turn.dfs - d
+		return True
+
+def grab_item(ai_go = False):
+	if ai_go == False:
+		print("A world break scroll was added to your inventory")
+		world_break_scroll = scroll('world break', 'world break')
+		player.add_inventory(world_break_scroll)
+		print(player.inventory)
+		return True
+	else:
+		return False
+
+def use_scroll(ai_go = False):
+	if ai_go == False:
+		player.use_item(p_commands)
+		return True
+	else:
+		return False
 
 #these are the commands dictionaries
 p_commands = {'attack' : attack, 'turtle' : turtle,
 	'commands' : list_commands, 'heal' : heal,
-	'see sword' : see_sword}
+	'see sword' : see_sword, 'grab item' : grab_item,
+	'use scroll' : use_scroll}
 
 g_commands = {'attack' : attack, 'turtle' : turtle,
 	'heal' : heal}
 
 
-
 #this is the game
-player = character("you", 10, 0, 0, True, [], [])
-game = character("game", 20, 0, 0, True, [], [])
+player = character("you", 10, 2, 2, True, [], [])
+game = character("game", 200, 2, 2, True, [], [])
 
 print("You pick up a sword.")
 new_sword = create_sword()
