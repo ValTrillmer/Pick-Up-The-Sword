@@ -34,18 +34,20 @@ class character:
 		else:
 			return self.atk + random.randint(0, 6) + self.a_inventory[0].atk_bonus()
 
-	def use_item(self, p_commands):
-		options = {}
-		z = 0
-		for self.inventory[z] in self.inventory:
-			if z < len(self.inventory):
-				options[z+1] = self.inventory[z]
-				z = z+1
-		print(options)
-		x = input("Choose item\n> ")
-		self.inventory[int(x)-1].use(p_commands)
-		del(self.inventory[int(x)-1])
-
+	def use_item(self, p_commands, ai_go):
+		if ai_go == False:
+			options = {}
+			z = 0
+			for self.inventory[z] in self.inventory:
+				if z < len(self.inventory):
+					options[z+1] = self.inventory[z]
+					z = z+1
+			print(options)
+			x = input("Choose item\n> ")
+			self.inventory[int(x)-1].use()
+			del(self.inventory[int(x)-1])
+		else:
+			pass
 
 
 class sword:
@@ -64,6 +66,30 @@ class sword:
 	def atk_bonus(self):
 		return descriptors[self.blade] + descriptors[self.hilt] + descriptors[self.magic]
 
+class room:
+	def __init__(self, name, chest, enemy, exit):
+		self.name = name
+		self.chest = chest
+		self.enemy = enemy
+		self.exit = exit
+
+	def __repr__(self):
+		return self.name
+
+	def fill_chest(self):
+		chest_inv = random.randint(0,3)
+		y = 0
+		if y <= chest_inv:
+			item_list = []
+			for key in item_dict.keys():
+				item_list += [key]
+			x = random.randint(0, len(item_list) - 1)
+			item_list[x] = item_dict[item_list[x]](item_list[x])
+			self.chest.append(item_list[x])
+			y = y + 1
+
+	def add_enemy(self):
+		
 
 #item classes
 class world_break_scroll:
@@ -74,9 +100,22 @@ class world_break_scroll:
 	def __repr__(self):
 		return self.name
 
-	def use(self, p_commands):
+	def use(self):
 		p_commands[self.call] = world_break
 		print("You have learned the world break skill!")
+
+class potion:
+	def __init__(self, name):
+		self.name = name
+
+	def __repr__(self):
+		return self.name
+
+	def use(self):
+		x = random.randint(2, 5) + 4
+		player.hp = player.hp + x
+		print("You gained " + str(x) + " life!")
+
 
 #this is the item dictionary
 item_dict = {"world break scroll" : world_break_scroll, "potion" : potion}
@@ -196,7 +235,7 @@ def grab_item(ai_go = False):
 		for key in item_dict.keys():
 			item_list += [key]
 		x = random.randint(0, len(item_list) - 1)
-		item_list[x] = world_break_scroll(item_list[x])
+		item_list[x] = item_dict[item_list[x]](item_list[x])
 		player.add_inventory(item_list[x])
 		print("A " + str(item_list[x]) + " was added to your inventory.")
 		print(player.inventory)
@@ -204,9 +243,9 @@ def grab_item(ai_go = False):
 	else:
 		return False
 
-def use_scroll(ai_go = False):
+def use_item(ai_go = False):
 	if ai_go == False:
-		player.use_item(p_commands)
+		player.use_item(p_commands, ai_go)
 		return True
 	else:
 		return False
@@ -217,7 +256,7 @@ def use_scroll(ai_go = False):
 p_commands = {'attack' : attack, 'turtle' : turtle,
 	'commands' : list_commands, 'heal' : heal,
 	'see sword' : see_sword, 'grab item' : grab_item,
-	'use scroll' : use_scroll}
+	'use item' : use_item}
 
 g_commands = {'attack' : attack, 'turtle' : turtle,
 	'heal' : heal}
