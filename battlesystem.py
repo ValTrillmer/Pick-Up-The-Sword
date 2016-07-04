@@ -35,8 +35,16 @@ class character:
 			return self.atk + random.randint(0, 6) + self.a_inventory[0].atk_bonus()
 
 	def use_item(self, p_commands):
-		p_commands[self.inventory[0].call] = world_break
-		list_commands()
+		options = {}
+		z = 0
+		for self.inventory[z] in self.inventory:
+			if z < len(self.inventory):
+				options[z+1] = self.inventory[z]
+				z = z+1
+		print(options)
+		x = input("Choose item\n> ")
+		self.inventory[int(x)-1].use(p_commands)
+		del(self.inventory[int(x)-1])
 
 
 
@@ -56,13 +64,23 @@ class sword:
 	def atk_bonus(self):
 		return descriptors[self.blade] + descriptors[self.hilt] + descriptors[self.magic]
 
-class scroll:
-	def __init__(self, name, call):
+
+#item classes
+class world_break_scroll:
+	def __init__(self, name):
 		self.name = name
-		self.call = call
+		self.call = "world break"
 
 	def __repr__(self):
 		return self.name
+
+	def use(self, p_commands):
+		p_commands[self.call] = world_break
+		print("You have learned the world break skill!")
+
+#this is the item dictionary
+item_dict = {"world break scroll" : world_break_scroll, "potion" : potion}
+
 
 #engine functions
 def engine(player_turn):
@@ -174,9 +192,13 @@ def world_break(ai_go = False):
 
 def grab_item(ai_go = False):
 	if ai_go == False:
-		print("A world break scroll was added to your inventory")
-		world_break_scroll = scroll('world break', 'world break')
-		player.add_inventory(world_break_scroll)
+		item_list = []
+		for key in item_dict.keys():
+			item_list += [key]
+		x = random.randint(0, len(item_list) - 1)
+		item_list[x] = world_break_scroll(item_list[x])
+		player.add_inventory(item_list[x])
+		print("A " + str(item_list[x]) + " was added to your inventory.")
 		print(player.inventory)
 		return True
 	else:
@@ -189,6 +211,8 @@ def use_scroll(ai_go = False):
 	else:
 		return False
 
+
+
 #these are the commands dictionaries
 p_commands = {'attack' : attack, 'turtle' : turtle,
 	'commands' : list_commands, 'heal' : heal,
@@ -200,8 +224,8 @@ g_commands = {'attack' : attack, 'turtle' : turtle,
 
 
 #this is the game
-player = character("you", 10, 2, 2, True, [], [])
-game = character("game", 200, 2, 2, True, [], [])
+player = character("you", 10, 4, 2, True, [], [])
+game = character("game", 200, 4, 2, True, [], [])
 
 print("You pick up a sword.")
 new_sword = create_sword()
