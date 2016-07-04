@@ -1,8 +1,8 @@
-descriptors = {"sharp" : 5,
+descriptors = {"sharp" : 4,
 "furry" : 1,
 "rusty" : 3,
 "snakes" : 2,
-"gleaming" : 4
+"gleaming" : 5
 }
 
 names = "thwacker poop bully whimpy destructor crumble notverygood".split()
