@@ -13,6 +13,9 @@ class character:
 		self.inventory = inventory
 		self.a_inventory = a_inventory
 
+	def __repr__(self):
+		return self.name
+
 	def check_alive(self):
 		if self.hp < 1:
 			self.alive = False
@@ -74,22 +77,31 @@ class room:
 		self.exit = exit
 
 	def __repr__(self):
-		return self.name
+		return self.name + " " + str(self.chest) + " " + str(self.enemy)
 
 	def fill_chest(self):
 		chest_inv = random.randint(0,3)
 		y = 0
-		if y <= chest_inv:
-			item_list = []
-			for key in item_dict.keys():
-				item_list += [key]
-			x = random.randint(0, len(item_list) - 1)
-			item_list[x] = item_dict[item_list[x]](item_list[x])
-			self.chest.append(item_list[x])
-			y = y + 1
+		item_list = []
+		for key in item_dict.keys():
+			item_list += [key]
+		empty = True
+		while empty:
+			if y <= chest_inv:
+				x = random.randint(0, len(item_list) - 1)
+				item = item_dict[item_list[x]](item_list[x])
+				self.chest.append(item)
+				y = y + 1
+			else:
+				empty = False
 
 	def add_enemy(self):
-		
+		enemy = character("ghoul", 50, 4, 2, True, [], [])
+		self.enemy.append(enemy)
+
+	def add_exit(self):
+		self.exit = random.randint(1,3)
+
 
 #item classes
 class world_break_scroll:
@@ -262,9 +274,20 @@ g_commands = {'attack' : attack, 'turtle' : turtle,
 	'heal' : heal}
 
 
+
+
+
+
 #this is the game
+
 player = character("you", 10, 4, 2, True, [], [])
 game = character("game", 200, 4, 2, True, [], [])
+
+room = room("dungeon", [], [], 0)
+room.fill_chest()
+room.add_enemy()
+room.add_exit()
+print(room)
 
 print("You pick up a sword.")
 new_sword = create_sword()

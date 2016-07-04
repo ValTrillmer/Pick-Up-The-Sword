@@ -1,0 +1,12 @@
+Pick Up The Sword To Do List:
+
+- Navigate rooms
+	- search chests
+	- ghouls
+	- travel to other rooms
+
+- Create Verb/Noun System
+	- use verbs as functions that act on nouns
+
+- Place classes in separate files
+	- clean code so that each class is not dependant on outside functions
