@@ -4,6 +4,7 @@ Pick Up The Sword To Do List:
 	- search chests
 	- ghouls
 	- travel to other rooms
+	- ghouls travel to toerh rooms
 
 - Create Verb/Noun System
 	- use verbs as functions that act on nouns
