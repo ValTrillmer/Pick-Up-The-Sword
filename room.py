@@ -31,12 +31,8 @@ class room:
 				empty = False
 
 	def add_enemy(self):
-		c = []
-		for key in creatures.keys():
-			c += [key]
-		new_creature = random.randint(1, len(c) - 1)
-		cr = c[new_creature]
-		ghoul = character(creatures[cr][0], creatures[cr][1], creatures[cr][2], creatures[cr][3], creatures[cr][4], creatures[cr][5], creatures[cr][6], creatures[cr][7])
+		x = random.randint(1, len(creatures) - 1)
+		ghoul = character(creatures[x][0], creatures[x][1], creatures[x][2], creatures[x][3], creatures[x][4], creatures[x][5], creatures[x][6], creatures[x][7])
 		self.enemy.append(ghoul)
 
 	def add_exit(self):

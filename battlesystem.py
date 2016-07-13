@@ -48,7 +48,7 @@ def create_sword():
 	return new_sword
 	
 def create_player():
-	p = creatures["player"][0] = character(creatures["player"][0], creatures["player"][1], creatures["player"][2], creatures["player"][3], creatures["player"][4], creatures["player"][5], creatures["player"][6], creatures["player"][7])
+	p = character(creatures[0][0], creatures[0][1], creatures[0][2], creatures[0][3], creatures[0][4], creatures[0][5], creatures[0][6], creatures[0][7])
 	return p
 
 
