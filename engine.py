@@ -5,14 +5,16 @@ party = []
 corpses = []
 given_names = ["Chet", "Burt", "Nard", "Will", "Preibus", "Carlchuck"]
 surnames = ["Butterball", "Butterworth", "Butterly", "Buttersson"]
+exp_to_lvl = {2 : 5, 3 : 10, 4 : 20}
 
 class person:
-	def __init__(self, name, hp, actions, level, exp, exp_given):
+	def __init__(self, name, hp, actions, level, exp, exp_total, exp_given):
 		self.name = name
 		self.hp = hp
 		self.actions = actions
 		self.level = level
 		self.exp = exp
+		self.exp_total = exp_total
 		self.exp_given = exp_given
 
 	def __repr__(self):
@@ -52,7 +54,7 @@ def create_party():
 		x = create_character()
 		party.append(x)
 		print(x)
-		if len(party) < 3:
+		if len(party) < 5:
 			full_party = False
 		else:
 			full_party = True
@@ -61,7 +63,7 @@ def create_party():
 def create_character():
 	y = random.randint(0,len(given_names)-1)
 	z = random.randint(0,len(surnames)-1)
-	x = person(given_names[y] + " " + surnames[z], random.randint(10, 20), [], 1, 0, 5)
+	x = person(given_names[y] + " " + surnames[z], random.randint(10, 20), [], 1, 0, 0, 5)
 	x.actions.append(x.single_attack)
 	x.actions.append(x.group_attack)
 	return x
@@ -73,12 +75,14 @@ def kill_check(x):
 			corpses.append(c)
 			print(str(corpses) + " are dead")
 			x.exp = x.exp + c.exp_given
+			x.exp_total = x.exp_total + c.exp_given
 		else:
 			pass
 
 def level_check(x):
-	if x.exp >= 5:
-		x.level = 2
+	if x.exp >= exp_to_lvl[x.level + 1]:
+		x.level = x.level + 1
+		x.exp = x.exp - exp_to_lvl[x.level]
 		print(x.name + " has reached level " + str(x.level) + "!")
 
 
@@ -93,5 +97,6 @@ while running:
 		level_check(x)
 		print(party)
 		if len(party) == 1:
+			print(x.exp_total)
 			print(sys.version)
 			running = False
