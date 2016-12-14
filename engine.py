@@ -2,14 +2,16 @@ import sys
 import random
 
 party = []
+dead = []
 corpses = []
 given_names = ["Chet", "Burt", "Nard", "Will", "Preibus", "Carlchuck"]
 surnames = ["Butterball", "Butterworth", "Butterly", "Buttersson"]
 exp_to_lvl = {2 : 5, 3 : 10, 4 : 20}
 
 class person:
-	def __init__(self, name, hp, actions, level, exp, exp_total, exp_given):
+	def __init__(self, name, maxhp, hp, actions, level, exp, exp_total, exp_given):
 		self.name = name
+		self.maxhp = maxhp
 		self.hp = hp
 		self.actions = actions
 		self.level = level
@@ -34,6 +36,17 @@ class person:
 		for z in y:
 			z.hp = z.hp - dmg
 			print(z.name + " has " + str(z.hp) + " hp left.")
+
+	def detonate_dead(self):
+		if len(corpses) > 0:
+			target = selecttarget(self)
+			c = random.randint(0, len(corpses)-1)
+			dmg = self.level * corpses[c].maxhp
+			target.hp = target.hp - dmg
+			print(self.name + " blew up " + corpses[c].name + "'s corpse, dealing " + str(dmg) + " damage!")
+			corpses.remove(corpses[c])
+		else:
+			print(self.name + " tried to be cool but there were no bodies to explode.")
 
 def selecttarget(x):
 	selected = False
@@ -63,17 +76,21 @@ def create_party():
 def create_character():
 	y = random.randint(0,len(given_names)-1)
 	z = random.randint(0,len(surnames)-1)
-	x = person(given_names[y] + " " + surnames[z], random.randint(10, 20), [], 1, 0, 0, 5)
+	h = random.randint(10, 20)
+	x = person(given_names[y] + " " + surnames[z], h, h, [], 1, 0, 0, 5)
 	x.actions.append(x.single_attack)
 	x.actions.append(x.group_attack)
+	x.actions.append(x.detonate_dead)
 	return x
 
 def kill_check(x):
 	for c in party:
 		if c.hp <= 0:
 			party.remove(c)
+			dead.append(c)
 			corpses.append(c)
-			print(str(corpses) + " are dead")
+			print(str(dead) + " are dead")
+			print(str(corpses) + "are on the floor.")
 			x.exp = x.exp + c.exp_given
 			x.exp_total = x.exp_total + c.exp_given
 		else:
